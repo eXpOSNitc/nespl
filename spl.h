@@ -1,7 +1,10 @@
 #include <stdio.h>
 
 #include "data.h"
+#include "file.h"
+#include "label.h"
 #include "node.h"
+#include "y.tab.h"
 
 #define LEGAL 0
 #define PAGE_PER_INTERRUPT 2
@@ -33,14 +36,17 @@ struct alias
 };
 extern struct alias *root_alias;
 
+struct define* lookup_constant(char *name);
 struct alias *lookup_alias(char *name);
-struct alias *lookup_alias_reg(int no);
-void push_alias(char *name, int no);
+struct alias *lookup_alias_reg(int reg);
+void push_alias(char *name, int reg);
 void pop_alias();
 void insert_constant(char *name, int value);
 void add_predefined_constants();
 node *substitute_id(node *id);
 void getreg(node *root, char reg[]);
 void codegen(node *root);
-void expandpath(char *path);
-void remfilename(char *pathname);
+
+int yylex();
+int yyparse();
+int yyerror();

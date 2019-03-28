@@ -7,5 +7,6 @@ y.tab.h
 *.xsm
 *.temp
 *.o
+*xsm
 spl_progs/
 .vscode/

@@ -2,6 +2,8 @@
 
 #define SPL_DATA_H
 
+#include <stdbool.h>
+
 #define R0 0
 #define R1 1
 #define R2 2
@@ -47,6 +49,14 @@
 // For compilers use only
 #define C_REG_BASE 16
 #define REG_NAME_MAX_LEN 5
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 int isAllowedRegister(int value);
 
