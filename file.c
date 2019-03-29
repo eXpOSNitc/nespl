@@ -27,9 +27,9 @@ void file_remExtension(char *pathname)
 {
     int i, l;
 
-    i = l - 1;
     l = strlen(pathname);
 
+    i = l - 1;
     while (pathname[i] != '.' && i >= 0)
         i--;
 

@@ -112,6 +112,21 @@ int yylex();
                 return MULTIPOP;
             }
 
+"start"     {
+                create_node(NODE_START, NULL, -1);
+                return START;
+            }
+
+"reset"     {
+                create_node(NODE_RESET, NULL, -1);
+                return RESET;
+            }
+
+"tsl"       {
+                create_node(NODE_TSL, NULL, -1);
+                return TSL;
+            }
+
 "while"     {
                 create_node(NODE_WHILE, NULL, -1);
                 return WHILE;
@@ -209,6 +224,11 @@ int yylex();
 
 "EMA"       {
                 create_node(NODE_REG, NULL, EMA);
+                return REG;
+            }
+
+"CORE"      {
+                create_node(NODE_REG, NULL, CORE);
                 return REG;
             }
 

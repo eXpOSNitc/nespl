@@ -155,7 +155,7 @@ void add_predefined_constants()
     fclose(c_fp);
 }
 
-/* Substitute alias with register */
+/* Substitute alias with constant or register */
 node *substitute_id(node *id)
 {
     struct define *temp;
@@ -209,6 +209,8 @@ void getreg(node *root, char reg[])
         sprintf(reg, "EC");
     else if (root->value == EMA)
         sprintf(reg, "EMA");
+    else if (root->value == CORE)
+        sprintf(reg, "CORE");
 }
 
 /* SPL Code Generation */
@@ -1425,6 +1427,27 @@ void codegen(node *root)
             {
                 fprintf(fp, "JMP %s\n", root->ptr1->name);
             }
+        }
+        break;
+    
+    case NODE_START:
+        out_linecount++;
+        fprintf(fp, "START\n");
+        break;
+
+    case NODE_RESET:
+        out_linecount++;
+        fprintf(fp, "RESET\n");
+        break;
+    
+    case NODE_TSL:
+        out_linecount++;
+        fprintf(fp, "TSL [%d], R%d\n", root->ptr1->value, C_REG_BASE + regcount);
+        regcount++;
+        if (regcount == 5)
+        {
+            printf("Register Overflow. Please reduce size of your expression.\n");
+            exit(0);
         }
         break;
 

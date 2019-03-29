@@ -40,9 +40,11 @@
 #define EC 31
 #define EMA 32
 
+#define CORE 33
+
 #define NUM_GEN_REG 20
 #define NUM_PORTS 4
-#define NUM_SPECIAL_REG 9
+#define NUM_SPECIAL_REG 10
 
 #define NUM_REGS (NO_GEN_REG + NO_SPECIAL_REG + NO_PORTS)
 

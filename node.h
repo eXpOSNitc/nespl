@@ -50,6 +50,9 @@
 #define NODE_LABEL_DEF 45
 #define NODE_MULTIPUSH 46
 #define NODE_MULTIPOP 47
+#define NODE_START 48
+#define NODE_RESET 49
+#define NODE_TSL 50
 
 typedef struct tree
 {

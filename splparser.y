@@ -14,9 +14,9 @@
     struct tree *n;
 }
 
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP START RESET TSL
 
-%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad reglist BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP
+%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad reglist BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP START RESET TSL
 
 %left LOGOP
 %left RELOP
@@ -29,7 +29,7 @@
 body:   definelistpad stmtlist  {
                                     codegen($2);
                                     out_linecount++;
-                                    fprintf(fp,"HALT");
+                                    fprintf(fp, "HALT");
                                 }
         ;
 
@@ -54,10 +54,10 @@ definestmt:     DEFINE ID NUM ';'               {
                 ;
 
 stmtlist:       stmtlist stmt                   {
-                                                    $$=create_nontermNode(NODE_STMTLIST, $1, $2);
+                                                    $$ = create_nontermNode(NODE_STMTLIST, $1, $2);
                                                 }
                 |stmt                           {
-                                                    $$=$1;
+                                                    $$ = $1;
                                                 }
                 ;
 
@@ -69,7 +69,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     }
                                                     else
                                                     {
-                                                        printf("\n%d:Invalid operands in assignment!!\n", linecount);
+                                                        printf("\n%d: Invalid operands in assignment!!\n", linecount);
                                                         exit(0);
                                                     }
                                                 }
@@ -81,7 +81,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     }
                                                     else
                                                     {
-                                                        printf("\n%d:Invalid operands in assignment!!\n",  linecount);
+                                                        printf("\n%d: Invalid operands in assignment!!\n",  linecount);
                                                         exit(0);
                                                     }
                                                 }
@@ -156,7 +156,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |READI ids ';'              {
                                                 if (node_getType($2) != NODE_REG || !isAllowedRegister($2->value))
                                                 {
-                                                    printf("\n%d:Invalid operand in read!!\n", linecount);
+                                                    printf("\n%d: Invalid operand in read!!\n", linecount);
                                                     exit(0);
                                                 }
                                                 $$ = create_tree($1, $2, NULL, NULL);
@@ -164,20 +164,20 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |PRINT expr ';'             {
                                                 $$ = create_tree($1, $2, NULL, NULL);
                                             }
-                |BACKUP ';'     {
+                |BACKUP ';'                 {
                                                 $$ = create_tree($1, NULL, NULL, NULL);
                                             }
-                |RESTORE ';'    {
+                |RESTORE ';'                {
                                                 $$ = create_tree($1, NULL, NULL, NULL);
                                             }
                 |ENCRYPT ids ';'            {
                                                 if (node_getType($2) != NODE_REG || !isAllowedRegister($2->value))
                                                 {
-                                                    printf("\n%d:Invalid operand in encrypt!!\n", linecount);
+                                                    printf("\n%d: Invalid operand in encrypt!!\n", linecount);
                                                     exit(0);
                                                 }
                                                 $$ = create_tree($1, $2, NULL, NULL);
-                                            }
+                                            } 
                 |GOTO ID ';'                {
                                                 if (lookup_constant(node_getName($2)) != NULL) // if the address to jump to is a predefined value in constants file
                                                     $$ = create_tree($1, substitute_id($2), NULL, NULL);
@@ -189,8 +189,8 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 if(lookup_constant(node_getName($2)) != NULL) // if the address to jump to is a predefined value in constants file
                                                     $$ = create_tree($1, substitute_id($2), NULL, NULL);
                                                 else
-                                                    $$ = create_tree($1,$2,NULL,NULL);
-                                                $$->value=linecount; // Hack to show line numbers in case of syntax errors
+                                                    $$ = create_tree($1, $2, NULL, NULL);
+                                                $$->value = linecount; // Hack to show line numbers in case of syntax errors
                                             }
                 |ID ':'                     {
                                                 label_add(node_getName($1));
@@ -201,6 +201,12 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 }
                 |MULTIPOP '(' reglist ')' ';'   {
                                                     $$ = create_tree($1, $3, NULL, NULL);
+                                                }
+                |START ';'                      {
+                                                    $$ = create_tree($1, NULL, NULL, NULL);
+                                                }
+                |RESET ';'                      {
+                                                    $$ = create_tree($1, NULL, NULL, NULL);
                                                 }
                 ;
 
@@ -223,6 +229,15 @@ expr:           expr ARITHOP1 expr          {
                                             }
                 |NOTOP expr                 {
                                                 $$ = create_tree($1, $2, NULL, NULL);
+                                            }
+                |TSL '(' ID ')'             {
+                                                if (lookup_constant(node_getName($3)) == NULL)
+                                                {
+                                                    printf("\n%d: Invalid operand in tsl!!\n", linecount);
+                                                    exit(0);
+                                                }
+                                                $$ = create_tree($1, substitute_id($3), NULL, NULL);
+                                                $$->value = linecount;
                                             }
                 |'['expr']'                 {
                                                 $$ = create_nontermNode(NODE_ADDR_EXPR, $2, NULL);
