@@ -1442,7 +1442,7 @@ void codegen(node *root)
     
     case NODE_TSL:
         out_linecount++;
-        fprintf(fp, "TSL [%d], R%d\n", root->ptr1->value, C_REG_BASE + regcount);
+        fprintf(fp, "TSL R%d, [%d]\n", C_REG_BASE + regcount, root->ptr1->value);
         regcount++;
         if (regcount == 5)
         {
