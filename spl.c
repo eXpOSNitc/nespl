@@ -1429,7 +1429,7 @@ void codegen(node *root)
             }
         }
         break;
-    
+
     case NODE_START:
         out_linecount++;
         fprintf(fp, "START\n");
@@ -1439,10 +1439,25 @@ void codegen(node *root)
         out_linecount++;
         fprintf(fp, "RESET\n");
         break;
-    
+
     case NODE_TSL:
-        out_linecount++;
-        fprintf(fp, "TSL R%d, [%d]\n", C_REG_BASE + regcount, root->ptr1->value);
+        if (root->ptr1->nodetype == NODE_NUM)
+        {
+            out_linecount++;
+            fprintf(fp, "TSL R%d, [%d]\n", C_REG_BASE + regcount, root->ptr1->value);
+        }
+        else if (root->ptr1->nodetype == NODE_REG)
+        {
+            getreg(root->ptr1, reg1);
+            out_linecount++;
+            fprintf(fp, "TSL R%d, [%s]\n", C_REG_BASE + regcount, reg1);
+        }
+        else
+        {
+            codegen(root->ptr1);
+            out_linecount++;
+            fprintf(fp, "SUB R%d, [R%d]\n", C_REG_BASE + regcount, C_REG_BASE + regcount - 1);
+        }
         regcount++;
         if (regcount == 5)
         {

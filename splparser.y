@@ -230,14 +230,9 @@ expr:           expr ARITHOP1 expr          {
                 |NOTOP expr                 {
                                                 $$ = create_tree($1, $2, NULL, NULL);
                                             }
-                |TSL '(' ID ')'             {
-                                                if (lookup_constant(node_getName($3)) == NULL)
-                                                {
-                                                    printf("\n%d: Invalid operand in tsl!!\n", linecount);
-                                                    exit(0);
-                                                }
-                                                $$ = create_tree($1, substitute_id($3), NULL, NULL);
-                                                $$->value = linecount;
+                |TSL '(' expr ')'             {
+                                                
+                                                $$ = create_tree($1, $3, NULL, NULL);
                                             }
                 |'['expr']'                 {
                                                 $$ = create_nontermNode(NODE_ADDR_EXPR, $2, NULL);
