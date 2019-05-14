@@ -9,4 +9,5 @@ y.tab.h
 *.o
 *xsm
 spl_progs/
+.DS_Store
 .vscode/
