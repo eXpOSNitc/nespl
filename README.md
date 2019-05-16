@@ -11,6 +11,6 @@ Prerequisites :
 
 Compiling and Running :
 ---------------------
-Run the following commands to compile and run the SPL compiler
+Run the following commands to compile and run the SPL compiler:
 1. `make`
 2. `./spl <path-to-file>`
